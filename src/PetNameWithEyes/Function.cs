@@ -6,6 +6,7 @@ using Amazon.Lambda.Core;
 using Amazon.Lambda.S3Events;
 using Amazon.S3;
 using Amazon.S3.Model;
+using System.Net.Http;
 
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
 
@@ -31,18 +32,24 @@ public class Function
         
         try
         {
-            // TODO this could use the pre-signed S3 input url
-            var cachedImage = await _s3Client.GetObjectAsync(_bucketName, objectKey);
+            using var httpClient = new HttpClient();
+            var response = await httpClient.GetAsync(input.GetObjectContext.InputS3Url);
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("Failed to fetch image from pre-signed URL");
+            }
+            
+            var stream = await response.Content.ReadAsStreamAsync();
             await _s3Client.WriteGetObjectResponseAsync(new WriteGetObjectResponseRequest
             {
                 RequestRoute = input.GetObjectContext.OutputRoute,
                 RequestToken = input.GetObjectContext.OutputToken,
-                Body = cachedImage.ResponseStream,
+                ContentLength = response.Content.Headers.ContentLength,
                 ContentType = "image/png",
-                ContentLength = cachedImage.ContentLength,
+                Body = stream,
             });
         }
-        catch (AmazonS3Exception)
+        catch (Exception)
         {
             var imageBytes = await GenerateImage(adverb, adjective, noun);
             
