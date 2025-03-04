@@ -134,6 +134,13 @@ namespace Infrastructure
                 Resources = ["*"],
                 Actions = ["s3-object-lambda:WriteGetObjectResponse"],
             }));
+
+            // Add output for Object Lambda Access Point ARN
+            new CfnOutput(this, "ObjectLambdaAccessPointArn", new CfnOutputProps
+            {
+                Value = objectLambdaAccessPoint.AttrArn,
+                Description = "ARN of the S3 Object Lambda Access Point"
+            });
         }
     }
 } 
