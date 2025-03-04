@@ -8,7 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Amazon.CDK.AWS.S3ObjectLambda.Alpha" Version="2.178.2-alpha.0" />
     <PackageReference Include="Amazon.CDK.Lib" Version="2.178.2" />
     <PackageReference Include="Amazon.JSII.Analyzers" Version="1.106.0" />
     <PackageReference Include="Constructs" Version="10.4.2" />

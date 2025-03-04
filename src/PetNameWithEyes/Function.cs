@@ -6,7 +6,6 @@ using Amazon.Lambda.Core;
 using Amazon.Lambda.S3Events;
 using Amazon.S3;
 using Amazon.S3.Model;
-using System.Net.Http;
 
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
 
@@ -34,6 +33,7 @@ public class Function
         {
             using var httpClient = new HttpClient();
             var response = await httpClient.GetAsync(input.GetObjectContext.InputS3Url);
+            
             if (!response.IsSuccessStatusCode)
             {
                 throw new Exception("Failed to fetch image from pre-signed URL");
